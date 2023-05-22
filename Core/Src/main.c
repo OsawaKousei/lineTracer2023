@@ -122,30 +122,22 @@ int main(void)
 	while (1) {
 
 		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 60);
-//		HAL_Delay(500);
-//		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 500);
-//		HAL_Delay(500);
 
-		HAL_ADC_Start(&hadc2);
-		HAL_ADC_Start(&hadc1);
+		for(int i=0; i<3; i++){
+		        HAL_ADC_Start(&hadc1);
+		        HAL_ADC_PollForConversion(&hadc1, 1);
+		        adc_value = HAL_ADC_GetValue(&hadc1);//0から4096までの値が返ってくる
+		        //下の変換は必要であれば
+		        data[i] = (float)adc_value * 3.3 / 4096;//実際の電圧(PT1~3がdata[0]~data[2]に対応するはず)
+		    }
+		    HAL_ADC_PollForConversion(&hadc2, 1);
+		    adc_value = HAL_ADC_GetValue(&hadc2);//0から4096までの値が返ってくる
+		    data[3]=(float)adc_value * 3.3 / 4096;//実際の電圧(PT4)
+		    for(int i=0;i<3;i++){
+		    printf("data %d = %f\n\r",i,data[i]);
+		    HAL_Delay(1000);
 
-//		for (int i = 0; i < 3; i++) {
-		HAL_ADC_PollForConversion(&hadc1, 1);
-		adc_value = HAL_ADC_GetValue(&hadc1); //0から4096までの値が返ってくる
-		//下の変換は必要であれば
-		data[0] = (float) adc_value * 3.3 / 4096;//実際の電圧(PT1~3がdata[0]~data[2]に対応するはず)
-//		}
-		HAL_ADC_PollForConversion(&hadc2, 1);
-		adc_value = HAL_ADC_GetValue(&hadc2);	          //0から4096までの値が返ってくる
-		data[1] = (float) adc_value * 3.3 / 4096;	          //実際の電圧(PT4)
-		for (int i = 0; i < 2; i++) {
-//			printf("%d", adc_value);
-			printf("data %d = %f  ", i, data[i]);
-		}
-		printf("\r\n");
-		HAL_ADC_Stop(&hadc2);
-		HAL_ADC_Stop(&hadc1);
-		HAL_Delay(1000);
+		    }
 
     /* USER CODE END WHILE */
 
